@@ -1,7 +1,6 @@
 from transformers import BertTokenizer, BertModel
 import torch
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertModel.from_pretrained('bert-base-uncased', output_attentions=False)
+
 
 
 def get_word_embedding(sentence, word, tokenizer, model):
@@ -21,6 +20,8 @@ def get_word_embedding(sentence, word, tokenizer, model):
     return word_embedding
     
 def calculate_similarity(sentence1, word1, embedding1, sentence2, word2, embedding2):
+  tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+  model = BertModel.from_pretrained('bert-base-uncased', output_attentions=False)
   if embedding1 == None:
     embedding1 = get_word_embedding(sentence1, word1, tokenizer, model)
 
