@@ -58,9 +58,13 @@ def handle_similarity_request():
     sentence1 = data['sentence1']
     word1 = data['word1']
     embedding1 = data.get('embedding1')  # 'embedding1' might not be present in the request
+    if embedding1 == 'null':
+        embedding1 = None
     sentence2 = data['sentence2']
     word2 = data['word2']
     embedding2 = data.get('embedding2')  # 'embedding2' might not be present in the request
+    if embedding2 == 'null':
+        embedding2 = None
 
     similarity_score = calculate_similarity(sentence1, word1, embedding1, sentence2, word2, embedding2)
     return jsonify({'similarity_score': similarity_score})
