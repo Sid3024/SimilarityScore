@@ -26,9 +26,11 @@ def calculate_similarity(sentence1, word1, embedding1, sentence2, word2, embeddi
 
   if embedding2 == None:
     embedding2 = get_word_embedding(sentence2, word2, tokenizer, model)
-
+  
   # Calculate cosine similarity
   similarity_score = torch.nn.functional.cosine_similarity(embedding1.unsqueeze(0), embedding2.unsqueeze(0))
+  return similarity_score  
+
 
 
 
