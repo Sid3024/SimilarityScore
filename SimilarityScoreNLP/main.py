@@ -29,7 +29,7 @@ def calculate_similarity(sentence1, word1, embedding1, sentence2, word2, embeddi
   
   # Calculate cosine similarity
   similarity_score = torch.nn.functional.cosine_similarity(embedding1.unsqueeze(0), embedding2.unsqueeze(0))
-  return similarity_score  
+  return similarity_score.numpy().tolist()
 
 
 
