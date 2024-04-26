@@ -17,6 +17,16 @@ def get_word_embedding(sentence, word, tokenizer, model):
     word_embedding = embeddings.mean(dim=0)  # Take mean across the subtoken dimension
 
     return word_embedding
+    
+def calculate_similarity(sentence1, word1, embedding1, sentence2, word2, embedding2):
+  if embedding1 == None:
+    embedding1 = get_word_embedding(sentence1, word1, tokenizer, model)
+
+  if embedding2 == None:
+    embedding2 = get_word_embedding(sentence2, word2, tokenizer, model)
+
+  # Calculate cosine similarity
+  similarity_score = torch.nn.functional.cosine_similarity(embedding1.unsqueeze(0), embedding2.unsqueeze(0))
 
 
 
@@ -24,14 +34,36 @@ def get_word_embedding(sentence, word, tokenizer, model):
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertModel.from_pretrained('bert-base-uncased', output_attentions=False)
 
-sentence1 = "box of sneakers"
-word1 = "sneakers"
-embedding1 = get_word_embedding(sentence1, word1, tokenizer, model)
+from flask import Flask, request, jsonify
 
-sentence2 = "red fruits"
-word2 = "fruits"
-embedding2 = get_word_embedding(sentence2, word2, tokenizer, model)
+app = Flask(__name__)
 
-# Calculate cosine similarity
-cosine_sim = torch.nn.functional.cosine_similarity(embedding1.unsqueeze(0), embedding2.unsqueeze(0))
-print(f"Cosine similarity: {cosine_sim.item()}")
+
+
+def send_result_to_api(similarity_score):
+    api_url = 'http://localhost:5000/calculate_similarity'  # Update this with your Flask server URL
+    payload = {'similarity_score': similarity_score}
+    response = requests.post(api_url, json=payload)
+
+    if response.status_code == 200:
+        print("Similarity score sent successfully!")
+    else:
+        print("Error sending similarity score. Status code:", response.status_code)
+        print("Response:", response.text)
+
+@app.route('/calculate_similarity', methods=['POST'])
+def handle_similarity_request():
+    data = request.get_json()
+    sentence1 = data['sentence1']
+    word1 = data['word1']
+    embedding1 = data.get('embedding1')  # 'embedding1' might not be present in the request
+    sentence2 = data['sentence2']
+    word2 = data['word2']
+    embedding2 = data.get('embedding2')  # 'embedding2' might not be present in the request
+
+    similarity_score = calculate_similarity(sentence1, word1, embedding1, sentence2, word2, embedding2)
+    return jsonify({'similarity_score': similarity_score})
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
