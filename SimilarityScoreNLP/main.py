@@ -59,7 +59,7 @@ def send_score_to_api(similarity_score):
 
 def send_embeddings_to_api(json_embeddings):
     api_url = 'http://localhost:5000/get_word_embeddings'  # Update this with your Flask server URL
-    payload = {'embeddings': similarity_score}
+    payload = {'embeddings': json_embeddings}
     response = requests.post(api_url, json=payload)
 
     if response.status_code == 200:
