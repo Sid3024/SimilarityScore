@@ -1,5 +1,8 @@
 from transformers import BertTokenizer, BertModel
 import torch
+import json
+import numpy as np
+import tensorflow as tf
 
 
 
@@ -20,8 +23,6 @@ def get_word_embedding(sentence, word, tokenizer, model):
     return word_embedding
     
 def calculate_similarity(sentence1, word1, embedding1, sentence2, word2, embedding2):
-  tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-  model = BertModel.from_pretrained('bert-base-uncased', output_attentions=False)
   if embedding1 == None:
     embedding1 = get_word_embedding(sentence1, word1, tokenizer, model)
 
@@ -42,9 +43,10 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+model = BertModel.from_pretrained('bert-base-uncased', output_attentions=False)
 
-
-def send_result_to_api(similarity_score):
+def send_score_to_api(similarity_score):
     api_url = 'http://localhost:5000/calculate_similarity'  # Update this with your Flask server URL
     payload = {'similarity_score': similarity_score}
     response = requests.post(api_url, json=payload)
@@ -54,6 +56,40 @@ def send_result_to_api(similarity_score):
     else:
         print("Error sending similarity score. Status code:", response.status_code)
         print("Response:", response.text)
+
+def send_embeddings_to_api(json_embeddings):
+    api_url = 'http://localhost:5000/get_word_embeddings'  # Update this with your Flask server URL
+    payload = {'embeddings': similarity_score}
+    response = requests.post(api_url, json=payload)
+
+    if response.status_code == 200:
+        print("Similarity score sent successfully!")
+    else:
+        print("Error sending similarity score. Status code:", response.status_code)
+        print("Response:", response.text)
+
+@app.route('/get_word_embeddings', methods=['POST'])
+def handle_embedding_request():
+    data = request.get_json()
+    word_list = data.get('Words', [])
+    sentence = data.get('sentence')
+    embedding_list = []
+    for word in word_list:
+        embedding_list.append(get_word_embedding(sentence, word, tokenizer, model))
+    # Convert tensors to NumPy arrays
+    numpy_array_list = [tensor.numpy() for tensor in embedding_list]
+    
+    # Convert NumPy arrays to lists (since lists are JSON-serializable)
+    list_list = [array.tolist() for array in numpy_array_list]
+    
+    # Convert to JSON
+    json_embeddings = json.dumps(list_list)
+    return json_embeddings
+
+    
+        
+    
+    
 
 @app.route('/calculate_similarity', methods=['POST'])
 def handle_similarity_request():
