@@ -77,7 +77,7 @@ def handle_embedding_request():
     for word in word_list:
         embedding_list.append(get_word_embedding(sentence, word, tokenizer, model))
     # Convert tensors to NumPy arrays
-    numpy_array_list = [tensor.numpy() for tensor in embedding_list]
+    numpy_array_list = [tensor.detach().numpy() for tensor in embedding_list]
     
     # Convert NumPy arrays to lists (since lists are JSON-serializable)
     list_list = [array.tolist() for array in numpy_array_list]
