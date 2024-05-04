@@ -71,8 +71,8 @@ def send_embeddings_to_api(json_embeddings):
 @app.route('/get_word_embeddings', methods=['POST'])
 def handle_embedding_request():
     data = request.get_json()
-    word_list = data.get('Words', [])
-    sentence = data.get('sentence')
+    word_list = data['words']
+    sentence = data['sentence']
     embedding_list = []
     for word in word_list:
         embedding_list.append(get_word_embedding(sentence, word, tokenizer, model))
@@ -89,7 +89,6 @@ def handle_embedding_request():
 @app.route('/get_tag_embeddings', methods=['POST'])
 def handle_tag_request():
     data = request.get_json()
-    word_list = data.get('Tags', [])
     embedding_list = []
     for word in word_list:
         embedding_list.append(get_word_embedding(word, word, tokenizer, model))
