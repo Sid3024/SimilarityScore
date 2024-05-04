@@ -90,7 +90,7 @@ def handle_embedding_request():
 def handle_tag_request():
     tag_list = request.get_json()
     embedding_list = []
-    for tag in tage_list:
+    for tag in tag_list:
         embedding_list.append(get_word_embedding(tag, tag, tokenizer, model))
     # Convert tensors to NumPy arrays
     numpy_array_list = [tensor.detach().numpy() for tensor in embedding_list]
