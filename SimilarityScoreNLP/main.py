@@ -89,6 +89,7 @@ def handle_embedding_request():
 @app.route('/get_tag_embeddings', methods=['POST'])
 def handle_tag_request():
     data = request.get_json()
+    word_list = data['words']
     embedding_list = []
     for word in word_list:
         embedding_list.append(get_word_embedding(word, word, tokenizer, model))
