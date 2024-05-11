@@ -71,7 +71,7 @@ def send_embeddings_to_api(json_embeddings):
 @app.route('/get_word_embeddings', methods=['POST'])
 def handle_embedding_request():
     data = request.get_json()
-    word_list = data['Words']
+    word_list = data['words']
     sentence = data['sentence']
     embedding_list = []
     for word in word_list:
